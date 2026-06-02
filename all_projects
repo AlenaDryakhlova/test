@@ -1,0 +1,2189 @@
+###all_project###
+CREATE DATABASE IF NOT EXISTS shoe_store CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE shoe_store;
+
+CREATE TABLE roles (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    role_id INT NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    login VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+
+CREATE TABLE categories (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE manufacturers (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE suppliers (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE products (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    article VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    unit VARCHAR(20) NOT NULL,
+    price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
+    supplier_id INT NOT NULL,
+    manufacturer_id INT NOT NULL,
+    category_id INT NOT NULL,
+    discount INT DEFAULT 0 CHECK (discount >= 0),
+    quantity INT DEFAULT 0 CHECK (quantity >= 0),
+    description TEXT,
+    photo VARCHAR(255),
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id),
+    FOREIGN KEY (manufacturer_id) REFERENCES manufacturers(id),
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+CREATE TABLE pickup_points (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    address VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE orders (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    article VARCHAR(255) NOT NULL,
+    order_date DATE,
+    delivery_date DATE,
+    pickup_point_id INT,
+    client_name VARCHAR(100),
+    pickup_code VARCHAR(20),
+    status VARCHAR(50),
+    FOREIGN KEY (pickup_point_id) REFERENCES pickup_points(id)
+);
+
+INSERT INTO roles (id, name) VALUES (1, 'Администратор'), (2, 'Менеджер'), (3, 'Авторизированный клиент');
+
+INSERT INTO categories (id, name) VALUES (1, 'Женская обувь'), (2, 'Мужская обувь');
+
+INSERT INTO manufacturers (id, name) VALUES (1, 'Alessio Nesca'), (2, 'CROSBY'), (3, 'Kari'), (4, 'Marco Tozzi'), (5, 'Rieker'), (6, 'Рос');
+
+INSERT INTO suppliers (id, name) VALUES (1, 'Kari'), (2, 'Обувь для вас');
+
+INSERT INTO users (role_id, full_name, login, password) VALUES
+(1, 'Никифорова Весения Николаевна', '94d5ous@gmail.com', 'uzWC67'),
+(1, 'Сазонов Руслан Германович', 'uth4iz@mail.com', '2L6KZG'),
+(1, 'Одинцов Серафим Артёмович', 'yzls62@outlook.com', 'JlFRCZ'),
+(2, 'Степанов Михаил Артёмович', '1diph5e@tutanota.com', '8ntwUp'),
+(2, 'Ворсин Петр Евгеньевич', 'tjde7c@yahoo.com', 'YOyhfR'),
+(2, 'Старикова Елена Павловна', 'wpmrc3do@tutanota.com', 'RSbvHv'),
+(3, 'Михайлюк Анна Вячеславовна', '5d4zbu@tutanota.com', 'rwVDh9'),
+(3, 'Ситдикова Елена Анатольевна', 'ptec8ym@yahoo.com', 'LdNyos'),
+(3, 'Ворсин Петр Евгеньевич', '1qz4kw@mail.com', 'gynQMT'),
+(3, 'Старикова Елена Павловна', '4np6se@mail.com', 'AtnDjr');
+
+INSERT INTO products (article, name, unit, price, supplier_id, manufacturer_id, category_id, discount, quantity, description, photo) VALUES
+('А112Т4', 'Ботинки', 'шт.', 4990.0, 1, 3, 1, 3, 6, 'Женские Ботинки демисезонные kari', '1.jpg'),
+('F635R4', 'Ботинки', 'шт.', 3244.0, 2, 4, 1, 2, 13, 'Ботинки Marco Tozzi женские демисезонные, размер 39, цвет бежевый', '2.jpg'),
+('H782T5', 'Туфли', 'шт.', 4499.0, 1, 3, 2, 4, 5, 'Туфли kari мужские классика MYZ21AW-450A, размер 43, цвет: черный', '3.jpg'),
+('G783F5', 'Ботинки', 'шт.', 5900.0, 1, 6, 2, 2, 8, 'Мужские ботинки Рос-Обувь кожаные с натуральным мехом', '4.jpg'),
+('J384T6', 'Ботинки', 'шт.', 3800.0, 2, 5, 2, 2, 16, 'B3430/14 Полуботинки мужские Rieker', '5.jpg'),
+('D572U8', 'Кроссовки', 'шт.', 4100.0, 2, 6, 2, 3, 6, '129615-4 Кроссовки мужские', '6.jpg'),
+('F572H7', 'Туфли', 'шт.', 2700.0, 1, 4, 1, 2, 14, 'Туфли Marco Tozzi женские летние, размер 39, цвет черный', '7.jpg'),
+('D329H3', 'Полуботинки', 'шт.', 1890.0, 2, 1, 1, 4, 4, 'Полуботинки Alessio Nesca женские 3-30797-47, размер 37, цвет: бордовый', '8.jpg'),
+('B320R5', 'Туфли', 'шт.', 4300.0, 1, 5, 1, 2, 6, 'Туфли Rieker женские демисезонные, размер 41, цвет коричневый', '9.jpg'),
+('G432E4', 'Туфли', 'шт.', 2800.0, 1, 3, 1, 3, 15, 'Туфли kari женские TR-YR-413017, размер 37, цвет: черный', '10.jpg'),
+('S213E3', 'Полуботинки', 'шт.', 2156.0, 2, 2, 2, 3, 6, '407700/01-01 Полуботинки мужские CROSBY', ''),
+('E482R4', 'Полуботинки', 'шт.', 1800.0, 1, 3, 1, 2, 14, 'Полуботинки kari женские MYZ20S-149, размер 41, цвет: черный', ''),
+('S634B5', 'Кеды', 'шт.', 5500.0, 2, 2, 2, 3, 0, 'Кеды Caprice мужские демисезонные, размер 42, цвет черный', ''),
+('K345R4', 'Полуботинки', 'шт.', 2100.0, 2, 2, 2, 2, 3, '407700/01-02 Полуботинки мужские CROSBY', ''),
+('O754F4', 'Туфли', 'шт.', 5400.0, 2, 5, 1, 4, 18, 'Туфли женские демисезонные Rieker артикул 55073-68/37', ''),
+('G531F4', 'Ботинки', 'шт.', 6600.0, 1, 3, 1, 12, 9, 'Ботинки женские зимние ROMER арт. 893167-01 Черный', ''),
+('J542F5', 'Тапочки', 'шт.', 500.0, 1, 3, 2, 13, 0, 'Тапочки мужские Арт.70701-55-67син р.41', ''),
+('B431R5', 'Ботинки', 'шт.', 2700.0, 2, 5, 2, 2, 5, 'Мужские кожаные ботинки/мужские ботинки', ''),
+('P764G4', 'Туфли', 'шт.', 6800.0, 1, 2, 1, 15, 15, 'Туфли женские, ARGO, размер 38', ''),
+('C436G5', 'Ботинки', 'шт.', 10200.0, 1, 1, 1, 15, 9, 'Ботинки женские, ARGO, размер 40', ''),
+('F427R5', 'Ботинки', 'шт.', 11800.0, 2, 5, 1, 15, 11, 'Ботинки на молнии с декоративной пряжкой FRAU', ''),
+('N457T5', 'Полуботинки', 'шт.', 4600.0, 1, 2, 1, 3, 13, 'Полуботинки Ботинки черные зимние, мех', ''),
+('D364R4', 'Туфли', 'шт.', 12400.0, 1, 3, 1, 16, 5, 'Туфли Luiza Belly женские Kate-lazo черные из натуральной замши', ''),
+('S326R5', 'Тапочки', 'шт.', 9900.0, 2, 2, 2, 17, 15, 'Мужские кожаные тапочки "Профиль С.Дали" ', ''),
+('L754R4', 'Полуботинки', 'шт.', 1700.0, 1, 3, 1, 2, 7, 'Полуботинки kari женские WB2020SS-26, размер 38, цвет: черный', ''),
+('M542T5', 'Кроссовки', 'шт.', 2800.0, 2, 5, 2, 18, 3, 'Кроссовки мужские TOFA', ''),
+('D268G5', 'Туфли', 'шт.', 4399.0, 2, 5, 1, 3, 12, 'Туфли Rieker женские демисезонные, размер 36, цвет коричневый', ''),
+('T324F5', 'Сапоги', 'шт.', 4699.0, 1, 2, 1, 2, 5, 'Сапоги замша Цвет: синий', ''),
+('K358H6', 'Тапочки', 'шт.', 599.0, 1, 5, 2, 20, 2, 'Тапочки мужские син р.41', ''),
+('H535R5', 'Ботинки', 'шт.', 2300.0, 2, 5, 1, 2, 7, 'Женские Ботинки демисезонные', '');
+
+INSERT INTO pickup_points (address) VALUES
+('420151, г. Лесной, ул. Вишневая, 32'),
+('125061, г. Лесной, ул. Подгорная, 8'),
+('630370, г. Лесной, ул. Шоссейная, 24'),
+('400562, г. Лесной, ул. Зеленая, 32'),
+('614510, г. Лесной, ул. Маяковского, 47'),
+('410542, г. Лесной, ул. Светлая, 46'),
+('620839, г. Лесной, ул. Цветочная, 8'),
+('443890, г. Лесной, ул. Коммунистическая, 1'),
+('603379, г. Лесной, ул. Спортивная, 46'),
+('603721, г. Лесной, ул. Гоголя, 41'),
+('410172, г. Лесной, ул. Северная, 13'),
+('614611, г. Лесной, ул. Молодежная, 50'),
+('454311, г.Лесной, ул. Новая, 19'),
+('660007, г.Лесной, ул. Октябрьская, 19'),
+('603036, г. Лесной, ул. Садовая, 4'),
+('394060, г.Лесной, ул. Фрунзе, 43'),
+('410661, г. Лесной, ул. Школьная, 50'),
+('625590, г. Лесной, ул. Коммунистическая, 20'),
+('625683, г. Лесной, ул. 8 Марта'),
+('450983, г.Лесной, ул. Комсомольская, 26'),
+('394782, г. Лесной, ул. Чехова, 3'),
+('603002, г. Лесной, ул. Дзержинского, 28'),
+('450558, г. Лесной, ул. Набережная, 30'),
+('344288, г. Лесной, ул. Чехова, 1'),
+('614164, г.Лесной,  ул. Степная, 30'),
+('394242, г. Лесной, ул. Коммунистическая, 43'),
+('660540, г. Лесной, ул. Солнечная, 25'),
+('125837, г. Лесной, ул. Шоссейная, 40'),
+('125703, г. Лесной, ул. Партизанская, 49'),
+('625283, г. Лесной, ул. Победы, 46'),
+('614753, г. Лесной, ул. Полевая, 35'),
+('426030, г. Лесной, ул. Маяковского, 44'),
+('450375, г. Лесной ул. Клубная, 44'),
+('625560, г. Лесной, ул. Некрасова, 12'),
+('630201, г. Лесной, ул. Комсомольская, 17'),
+('190949, г. Лесной, ул. Мичурина, 26');
+
+INSERT INTO orders (article, order_date, delivery_date, pickup_point_id, client_name, pickup_code, status) VALUES
+('А112Т4, 2, F635R4, 2', '2025-02-27', '2025-04-20', 1, 'Степанов Михаил Артёмович', '901', 'Завершен'),
+('H782T5, 1, G783F5, 1', '2022-09-28', '2025-04-21', 11, 'Никифорова Весения Николаевна', '902', 'Завершен'),
+('J384T6, 10, D572U8, 10', '2025-03-21', '2025-04-22', 2, 'Сазонов Руслан Германович', '903', 'Завершен'),
+('F572H7, 5, D329H3, 4', '2025-02-20', '2025-04-23', 11, 'Одинцов Серафим Артёмович', '904', 'Завершен'),
+('А112Т4, 2, F635R4, 2', '2025-03-17', '2025-04-24', 2, 'Степанов Михаил Артёмович', '905', 'Завершен'),
+('H782T5, 1, G783F5, 1', '2025-03-01', '2025-04-25', 15, 'Никифорова Весения Николаевна', '906', 'Завершен'),
+('J384T6, 10, D572U8, 10', NULL, '2025-04-26', 3, 'Сазонов Руслан Германович', '907', 'Завершен'),
+('F572H7, 5, D329H3, 4', '2025-03-31', '2025-04-27', 19, 'Одинцов Серафим Артёмович', '908', 'Новый'),
+('B320R5, 5, G432E4, 1', '2025-04-02', '2025-04-28', 5, 'Степанов Михаил Артёмович', '909', 'Новый'),
+('S213E3, 5, E482R4, 5', '2025-04-03', '2025-04-29', 19, 'Степанов Михаил Артёмович', '910', 'Новый');
+
+#main.py
+import sys
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtGui import QFont
+from login_window import LoginWindow
+
+def main():
+    app = QApplication(sys.argv)
+    app.setFont(QFont('Times New Roman', 11))
+    window = LoginWindow()
+    window.show()
+    sys.exit(app.exec())
+
+if __name__ == '__main__':
+    main()
+
+#db.py
+import pymysql
+from pymysql.cursors import DictCursor
+
+DB_CONFIG = {'host': 'localhost', 'user': 'root', 'password': '12345', 'database': 'shoes_store', 'charset': 'utf8mb4', 'cursorclass': DictCursor}
+
+def get_conn():
+    return pymysql.connect(**DB_CONFIG)
+
+def get_user(login, password):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT u.id, u.full_name, r.name AS role
+                FROM users u JOIN roles r ON u.role_id = r.id
+                WHERE u.login = %s AND u.password = %s
+            """, (login, password))
+            return cur.fetchone()
+
+def get_products(search='', supplier_id=None, sort=None):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            sql = """
+                SELECT p.*, c.name AS category, m.name AS manufacturer, s.name AS supplier
+                FROM products p
+                JOIN categories c ON p.category_id = c.id
+                JOIN manufacturers m ON p.manufacturer_id = m.id
+                JOIN suppliers s ON p.supplier_id = s.id
+            """
+            params = []
+            if search:
+                sql += " WHERE (p.name LIKE %s OR p.description LIKE %s OR p.article LIKE %s)"
+                params = [f'%{search}%'] * 3
+            if supplier_id:
+                sql += " AND p.supplier_id = %s" if 'WHERE' in sql else " WHERE p.supplier_id = %s"
+                params.append(supplier_id)
+            if sort == 'asc':
+                sql += " ORDER BY p.quantity ASC"
+            elif sort == 'desc':
+                sql += " ORDER BY p.quantity DESC"
+            cur.execute(sql, params)
+            return cur.fetchall()
+
+def get_product(product_id):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT * FROM products WHERE id = %s", (product_id,))
+            return cur.fetchone()
+
+def save_product(data, product_id=None):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            if product_id:
+                sql = """UPDATE products SET article=%s, name=%s, unit=%s, price=%s,
+                         supplier_id=%s, manufacturer_id=%s, category_id=%s,
+                         discount=%s, quantity=%s, description=%s, photo=%s WHERE id=%s"""
+                cur.execute(sql, (*data.values(), product_id))
+            else:
+                sql = """INSERT INTO products (article, name, unit, price, supplier_id,
+                         manufacturer_id, category_id, discount, quantity, description, photo)
+                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+                cur.execute(sql, tuple(data.values()))
+            conn.commit()
+
+def delete_product(product_id):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM products WHERE id = %s", (product_id,))
+            conn.commit()
+
+def product_in_orders(article):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT COUNT(*) as cnt FROM orders WHERE article LIKE %s", (f'%{article}%',))
+            return cur.fetchone()['cnt'] > 0
+
+def get_suppliers():
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT id, name FROM suppliers ORDER BY name")
+            return cur.fetchall()
+
+def get_categories():
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT id, name FROM categories ORDER BY name")
+            return cur.fetchall()
+
+def get_manufacturers():
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT id, name FROM manufacturers ORDER BY name")
+            return cur.fetchall()
+
+def get_orders():
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT o.*, pp.address AS pickup_address
+                FROM orders o LEFT JOIN pickup_points pp ON o.pickup_point_id = pp.id
+                ORDER BY o.id
+            """)
+            return cur.fetchall()
+
+def get_order(order_id):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT * FROM orders WHERE id = %s", (order_id,))
+            return cur.fetchone()
+
+def save_order(data, order_id=None):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            if order_id:
+                sql = """UPDATE orders SET article=%s, order_date=%s, delivery_date=%s,
+                         pickup_point_id=%s, client_name=%s, pickup_code=%s, status=%s WHERE id=%s"""
+                cur.execute(sql, (*data.values(), order_id))
+            else:
+                sql = """INSERT INTO orders (article, order_date, delivery_date, pickup_point_id,
+                         client_name, pickup_code, status) VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+                cur.execute(sql, tuple(data.values()))
+            conn.commit()
+
+def delete_order(order_id):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM orders WHERE id = %s", (order_id,))
+            conn.commit()
+
+def get_pickup_points():
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT id, address FROM pickup_points ORDER BY id")
+            return cur.fetchall()
+
+#login_window.py
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import *
+import db
+
+class LoginWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('Авторизация — ООО "Обувь"')
+        self.setMinimumSize(400, 450)
+        self.setup_ui()
+
+    def setup_ui(self):
+        central = QWidget()
+        central.setStyleSheet('background: white;')
+        self.setCentralWidget(central)
+        layout = QVBoxLayout(central)
+        layout.setContentsMargins(40, 30, 40, 30)
+        layout.setSpacing(12)
+
+        # Логотип
+        logo = QLabel('ООО "Обувь"')
+        logo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        logo.setFont(QFont('Times New Roman', 18, QFont.Weight.Bold))
+        layout.addWidget(logo)
+
+        line = QFrame()
+        line.setFrameShape(QFrame.Shape.HLine)
+        line.setStyleSheet('color:#AAA;')
+        layout.addWidget(line)
+
+        title = QLabel('Вход в систему')
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setFont(QFont('Times New Roman', 15, QFont.Weight.Bold))
+        layout.addWidget(title)
+
+        self.input_login = QLineEdit()
+        self.input_login.setPlaceholderText('Введите логин')
+        self.input_login.setFixedHeight(32)
+        layout.addWidget(self.input_login)
+
+        self.input_password = QLineEdit()
+        self.input_password.setEchoMode(QLineEdit.EchoMode.Password)
+        self.input_password.setPlaceholderText('Введите пароль')
+        self.input_password.setFixedHeight(32)
+        self.input_password.returnPressed.connect(self.login)
+        layout.addWidget(self.input_password)
+
+        layout.addSpacing(10)
+
+        btn_login = QPushButton('Войти')
+        btn_login.setStyleSheet('QPushButton { background: #00FA9A; padding: 8px; border-radius: 4px; }')
+        btn_login.clicked.connect(self.login)
+        layout.addWidget(btn_login)
+
+        btn_guest = QPushButton('Войти как гость')
+        btn_guest.setStyleSheet('QPushButton { background: #7FFF00; padding: 8px; border-radius: 4px; }')
+        btn_guest.clicked.connect(lambda: self.open_products(None))
+        layout.addWidget(btn_guest)
+
+    def login(self):
+        login = self.input_login.text().strip()
+        password = self.input_password.text().strip()
+        if not login or not password:
+            QMessageBox.warning(self, 'Ошибка', 'Введите логин и пароль')
+            return
+        try:
+            user = db.get_user(login, password)
+        except Exception as e:
+            QMessageBox.critical(self, 'Ошибка', f'Ошибка БД: {e}')
+            return
+        if not user:
+            QMessageBox.warning(self, 'Ошибка', 'Неверный логин или пароль')
+            self.input_password.clear()
+            return
+        self.open_products(user)
+
+    def open_products(self, user):
+        from products_window import ProductsWindow
+        self.products_window = ProductsWindow(user, self)
+        self.products_window.show()
+        self.hide()
+
+#order_form.py
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import Qt, QDate
+from PyQt6.QtGui import QFont
+import db
+
+BTN_STYLE = 'QPushButton { padding: 6px 14px; border-radius: 4px; font-size: 11px; } QPushButton:hover { opacity: 0.8; }'
+BTN_GREEN = f'QPushButton {{ background-color: #00FA9A; border: 1px solid #999; {BTN_STYLE} }}'
+BTN_GRAY = f'QPushButton {{ background-color: #EEEEEE; border: 1px solid #999; {BTN_STYLE} }}'
+
+STATUSES = ['Новый', 'В обработке', 'Отправлен', 'Завершен', 'Отменен']
+
+class OrderFormWindow(QDialog):
+    def __init__(self, order_id, parent):
+        super().__init__(parent)
+        self.order_id = order_id
+        self.parent = parent
+        self.is_edit = order_id is not None
+        self.setWindowTitle('Редактирование заказа' if self.is_edit else 'Добавление заказа')
+        self.setMinimumSize(500, 400)
+        self.setModal(True)
+        self.setup_ui()
+        if self.is_edit:
+            self.load_data()
+
+    def setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(20, 16, 20, 16)
+
+        title = QLabel(self.windowTitle())
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setFont(QFont('Times New Roman', 14, QFont.Weight.Bold))
+        layout.addWidget(title)
+
+        form = QFormLayout()
+        form.setSpacing(10)
+        font = QFont('Times New Roman', 11)
+
+        self.article = QLineEdit()
+        self.article.setPlaceholderText('Например: А112Т4, 2, F635R4, 1')
+        self.article.setFont(font)
+        form.addRow('Артикул:', self.article)
+
+        self.status = QComboBox()
+        for s in STATUSES:
+            self.status.addItem(s)
+        form.addRow('Статус:', self.status)
+
+        self.pickup = QComboBox()
+        for pp in db.get_pickup_points():
+            self.pickup.addItem(pp['address'], pp['id'])
+        form.addRow('Пункт выдачи:', self.pickup)
+
+        self.order_date = QDateEdit()
+        self.order_date.setDate(QDate.currentDate())
+        self.order_date.setDisplayFormat('dd.MM.yyyy')
+        self.order_date.setCalendarPopup(True)
+        form.addRow('Дата заказа:', self.order_date)
+
+        self.delivery_date = QDateEdit()
+        self.delivery_date.setDate(QDate.currentDate())
+        self.delivery_date.setDisplayFormat('dd.MM.yyyy')
+        self.delivery_date.setCalendarPopup(True)
+        form.addRow('Дата выдачи:', self.delivery_date)
+
+        layout.addLayout(form)
+        layout.addStretch()
+
+        # Кнопки
+        btn_layout = QHBoxLayout()
+        btn_save = QPushButton('Сохранить')
+        btn_save.setStyleSheet(BTN_GREEN)
+        btn_save.clicked.connect(self.save)
+        btn_layout.addWidget(btn_save)
+
+        btn_cancel = QPushButton('Отмена')
+        btn_cancel.setStyleSheet(BTN_GRAY)
+        btn_cancel.clicked.connect(self.reject)
+        btn_layout.addWidget(btn_cancel)
+
+        layout.addLayout(btn_layout)
+
+    def load_data(self):
+        order = db.get_order(self.order_id)
+        if not order:
+            return
+        self.article.setText(order['article'])
+        idx = self.status.findText(order['status'])
+        if idx >= 0:
+            self.status.setCurrentIndex(idx)
+        for i in range(self.pickup.count()):
+            if self.pickup.itemData(i) == order['pickup_point_id']:
+                self.pickup.setCurrentIndex(i)
+                break
+        if order['order_date']:
+            d = order['order_date']
+            if hasattr(d, 'year'):
+                self.order_date.setDate(QDate(d.year, d.month, d.day))
+            else:
+                parts = str(d)[:10].split('-')
+                if len(parts) == 3:
+                    self.order_date.setDate(QDate(int(parts[0]), int(parts[1]), int(parts[2])))
+        if order['delivery_date']:
+            d = order['delivery_date']
+            if hasattr(d, 'year'):
+                self.delivery_date.setDate(QDate(d.year, d.month, d.day))
+            else:
+                parts = str(d)[:10].split('-')
+                if len(parts) == 3:
+                    self.delivery_date.setDate(QDate(int(parts[0]), int(parts[1]), int(parts[2])))
+
+    def save(self):
+        if not self.article.text().strip():
+            QMessageBox.warning(self, 'Ошибка', 'Введите артикул')
+            return
+
+        data = {
+            'article': self.article.text().strip(),
+            'status': self.status.currentText(),
+            'pickup_point_id': self.pickup.currentData(),
+            'order_date': self.order_date.date().toString('yyyy-MM-dd'),
+            'delivery_date': self.delivery_date.date().toString('yyyy-MM-dd'),
+            'client_name': '',
+            'pickup_code': ''
+        }
+        db.save_order(data, self.order_id if self.is_edit else None)
+        QMessageBox.information(self, 'Успех', 'Заказ сохранен')
+        self.parent.load_orders()
+        self.accept()
+
+#orders_window.py
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFont
+import db
+
+BTN_STYLE = 'QPushButton { padding: 6px 14px; border-radius: 4px; } QPushButton:hover { opacity: 0.8; }'
+BTN_GREEN = f'QPushButton {{ background-color: #00FA9A; border: 1px solid #999; {BTN_STYLE} }}'
+BTN_LIME = f'QPushButton {{ background-color: #7FFF00; border: 1px solid #999; {BTN_STYLE} }}'
+BTN_RED = f'QPushButton {{ background-color: #FF6B6B; border: 1px solid #999; {BTN_STYLE} }}'
+BTN_GRAY = f'QPushButton {{ background-color: #EEEEEE; border: 1px solid #999; {BTN_STYLE} }}'
+
+class OrderItemWidget(QFrame):
+    def __init__(self, order, user, parent):
+        super().__init__()
+        self.order = order
+        self.parent = parent
+        self.setStyleSheet('QFrame { background: white; border: 1px solid #CCC; border-radius: 4px; margin: 2px; }')
+
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(12, 8, 8, 8)
+
+        info = QLabel(
+            f'<b>Артикул заказа: {order["article"]}</b><br>'
+            f'Статус: {order["status"]}<br>'
+            f'Адрес: {order.get("pickup_address", "—")}<br>'
+            f'Дата заказа: {str(order["order_date"])[:10]}'
+        )
+        info.setFont(QFont('Times New Roman', 11))
+        layout.addWidget(info, 1)
+
+        delivery = str(order.get('delivery_date', ''))[:10] or '—'
+        delivery_label = QLabel(f'Дата доставки:\n{delivery}')
+        delivery_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        delivery_label.setFixedWidth(130)
+        delivery_label.setStyleSheet('border:1px solid #AAA; background:#F9F9F9; border-radius:4px; padding:4px;')
+        layout.addWidget(delivery_label)
+
+        if user and user['role'] == 'Администратор':
+            btn_edit = QPushButton('Изменить')
+            btn_edit.setStyleSheet(BTN_LIME)
+            btn_edit.clicked.connect(lambda: parent.open_order_form(order['id']))
+            layout.addWidget(btn_edit)
+
+            btn_del = QPushButton('Удалить')
+            btn_del.setStyleSheet(BTN_RED)
+            btn_del.clicked.connect(self.delete_order)
+            layout.addWidget(btn_del)
+
+    def delete_order(self):
+        if QMessageBox.question(self, 'Удаление',
+                                f'Удалить заказ №{self.order["id"]}?') == QMessageBox.StandardButton.Yes:
+            db.delete_order(self.order['id'])
+            self.parent.load_orders()
+
+
+class OrdersWindow(QMainWindow):
+    def __init__(self, user, products_window):
+        super().__init__()
+        self.user = user
+        self.setWindowTitle('Заказы — ООО "Обувь"')
+        self.setMinimumSize(800, 500)
+        self.setup_ui()
+        self.load_orders()
+
+    def setup_ui(self):
+        central = QWidget()
+        central.setStyleSheet('background: white;')
+        self.setCentralWidget(central)
+        layout = QVBoxLayout(central)
+        layout.setContentsMargins(10, 10, 10, 10)
+
+        # Верхняя панель
+        top = QHBoxLayout()
+        title = QLabel('Список заказов')
+        title.setFont(QFont('Times New Roman', 14, QFont.Weight.Bold))
+        top.addWidget(title)
+        top.addStretch()
+
+        if self.user:
+            name = QLabel(self.user['full_name'])
+            name.setFont(QFont('Times New Roman', 11, QFont.Weight.Bold))
+            top.addWidget(name)
+
+        btn_back = QPushButton('Назад')
+        btn_back.setStyleSheet(BTN_GRAY)
+        btn_back.clicked.connect(self.close)
+        top.addWidget(btn_back)
+        layout.addLayout(top)
+
+        # Кнопка добавления для админа
+        if self.user and self.user['role'] == 'Администратор':
+            btn_add = QPushButton('+ Добавить заказ')
+            btn_add.setStyleSheet(BTN_GREEN)
+            btn_add.clicked.connect(lambda: self.open_order_form())
+            layout.addWidget(btn_add, 0, Qt.AlignmentFlag.AlignLeft)
+
+        # Список заказов
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        self.list_widget = QWidget()
+        self.list_layout = QVBoxLayout(self.list_widget)
+        self.list_layout.setSpacing(4)
+        scroll.setWidget(self.list_widget)
+        layout.addWidget(scroll)
+
+    def load_orders(self):
+        while self.list_layout.count():
+            w = self.list_layout.takeAt(0).widget()
+            if w: w.deleteLater()
+
+        orders = db.get_orders()
+        if not orders:
+            lbl = QLabel('Заказы не найдены')
+            lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.list_layout.addWidget(lbl)
+        else:
+            for o in orders:
+                self.list_layout.addWidget(OrderItemWidget(o, self.user, self))
+
+    def open_order_form(self, order_id=None):
+        from order_form import OrderFormWindow
+        OrderFormWindow(order_id, self).show()
+
+#product_form.py
+import os
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap, QFont
+from PIL import Image
+import db
+
+BTN_STYLE = 'QPushButton { padding: 6px 14px; border-radius: 4px; }'
+BTN_GREEN = f'QPushButton {{ background-color: #00FA9A; border: 1px solid #999; {BTN_STYLE} }}'
+BTN_GRAY = f'QPushButton {{ background-color: #EEEEEE; border: 1px solid #999; {BTN_STYLE} }}'
+
+class ProductFormWindow(QDialog):
+    def __init__(self, product_id, parent):
+        super().__init__(parent)
+        self.product_id = product_id
+        self.parent = parent
+        self.photo_path = ''
+        self.is_edit = product_id is not None
+        self.setWindowTitle('Редактирование товара' if self.is_edit else 'Добавление товара')
+        self.setMinimumSize(550, 600)
+        self.setModal(True)
+        self.setup_ui()
+        if self.is_edit:
+            self.load_data()
+
+    def setup_ui(self):
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(16, 16, 16, 16)
+
+        title = QLabel(self.windowTitle())
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setFont(QFont('Times New Roman', 14, QFont.Weight.Bold))
+        layout.addWidget(title)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        content = QWidget()
+        form = QFormLayout(content)
+        form.setSpacing(10)
+
+        # Фото
+        photo_layout = QHBoxLayout()
+        self.photo_label = QLabel()
+        self.photo_label.setFixedSize(150, 100)
+        self.photo_label.setStyleSheet('border:1px solid #AAA; background:#F5F5F5;')
+        self.set_stub_photo()
+        photo_layout.addWidget(self.photo_label)
+
+        btn_photo = QPushButton('Выбрать фото')
+        btn_photo.setStyleSheet(BTN_GRAY)
+        btn_photo.clicked.connect(self.choose_photo)
+        photo_layout.addWidget(btn_photo)
+        photo_layout.addStretch()
+        form.addRow('Фото:', photo_layout)
+
+        # Поля
+        self.article = QLineEdit()
+        form.addRow('Артикул:', self.article)
+
+        self.name = QLineEdit()
+        form.addRow('Наименование:', self.name)
+
+        self.category = QComboBox()
+        for c in db.get_categories():
+            self.category.addItem(c['name'], c['id'])
+        form.addRow('Категория:', self.category)
+
+        self.desc = QTextEdit()
+        self.desc.setFixedHeight(70)
+        form.addRow('Описание:', self.desc)
+
+        self.manufacturer = QComboBox()
+        for m in db.get_manufacturers():
+            self.manufacturer.addItem(m['name'], m['id'])
+        form.addRow('Производитель:', self.manufacturer)
+
+        self.supplier = QComboBox()
+        for s in db.get_suppliers():
+            self.supplier.addItem(s['name'], s['id'])
+        form.addRow('Поставщик:', self.supplier)
+
+        self.price = QDoubleSpinBox()
+        self.price.setRange(0, 9999999)
+        self.price.setSuffix(' руб.')
+        form.addRow('Цена:', self.price)
+
+        self.unit = QLineEdit()
+        form.addRow('Единица измерения:', self.unit)
+
+        self.quantity = QSpinBox()
+        self.quantity.setRange(0, 999999)
+        form.addRow('Кол-во на складе:', self.quantity)
+
+        self.discount = QSpinBox()
+        self.discount.setRange(0, 100)
+        self.discount.setSuffix('%')
+        form.addRow('Скидка:', self.discount)
+
+        scroll.setWidget(content)
+        layout.addWidget(scroll)
+
+        # Кнопки
+        btn_layout = QHBoxLayout()
+        btn_save = QPushButton('Сохранить')
+        btn_save.setStyleSheet(BTN_GREEN)
+        btn_save.clicked.connect(self.save)
+        btn_layout.addWidget(btn_save)
+
+        btn_cancel = QPushButton('Отмена')
+        btn_cancel.setStyleSheet(BTN_GRAY)
+        btn_cancel.clicked.connect(self.reject)
+        btn_layout.addWidget(btn_cancel)
+
+        layout.addLayout(btn_layout)
+
+    def set_stub_photo(self):
+        stub = os.path.join(os.path.dirname(__file__), 'picture.png')
+        if os.path.exists(stub):
+            pix = QPixmap(stub).scaled(150, 100, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+            self.photo_label.setPixmap(pix)
+
+    def choose_photo(self):
+        path, _ = QFileDialog.getOpenFileName(self, 'Выберите фото', '', 'Images (*.png *.jpg *.jpeg)')
+        if path:
+            dest = os.path.join(os.path.dirname(__file__), os.path.basename(path))
+            Image.open(path).resize((300, 200), Image.LANCZOS).save(dest)
+            self.photo_path = os.path.basename(path)
+            pix = QPixmap(dest).scaled(150, 100, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+            self.photo_label.setPixmap(pix)
+
+    def load_data(self):
+        p = db.get_product(self.product_id)
+        if p:
+            self.article.setText(p['article'])
+            self.name.setText(p['name'])
+            self.desc.setPlainText(p.get('description', ''))
+            self.unit.setText(p['unit'])
+            self.price.setValue(float(p['price']))
+            self.quantity.setValue(p['quantity'])
+            self.discount.setValue(p.get('discount', 0))
+
+            for i in range(self.category.count()):
+                if self.category.itemData(i) == p['category_id']:
+                    self.category.setCurrentIndex(i)
+                    break
+            for i in range(self.manufacturer.count()):
+                if self.manufacturer.itemData(i) == p['manufacturer_id']:
+                    self.manufacturer.setCurrentIndex(i)
+                    break
+            for i in range(self.supplier.count()):
+                if self.supplier.itemData(i) == p['supplier_id']:
+                    self.supplier.setCurrentIndex(i)
+                    break
+
+            if p.get('photo'):
+                self.photo_path = p['photo']
+                path = os.path.join(os.path.dirname(__file__), p['photo'])
+                if os.path.exists(path):
+                    pix = QPixmap(path).scaled(150, 100, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+                    self.photo_label.setPixmap(pix)
+
+    def save(self):
+        if not self.article.text().strip() or not self.name.text().strip():
+            QMessageBox.warning(self, 'Ошибка', 'Заполните артикул и наименование')
+            return
+
+        data = {
+            'article': self.article.text().strip(),
+            'name': self.name.text().strip(),
+            'unit': self.unit.text().strip(),
+            'price': self.price.value(),
+            'supplier_id': self.supplier.currentData(),
+            'manufacturer_id': self.manufacturer.currentData(),
+            'category_id': self.category.currentData(),
+            'discount': self.discount.value(),
+            'quantity': self.quantity.value(),
+            'description': self.desc.toPlainText().strip(),
+            'photo': self.photo_path
+        }
+        db.save_product(data, self.product_id if self.is_edit else None)
+        self.parent.load_products()
+        self.accept()
+
+#products_window.py
+import os
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtGui import QPixmap, QFont
+import db
+
+BTN_STYLE = 'QPushButton { padding: 6px 14px; border-radius: 4px; font-size: 11px; } QPushButton:hover { opacity: 0.8; }'
+BTN_GREEN = f'QPushButton {{ background-color: #00FA9A; border: 1px solid #999; {BTN_STYLE} }}'
+BTN_LIME = f'QPushButton {{ background-color: #7FFF00; border: 1px solid #999; {BTN_STYLE} }}'
+BTN_RED = f'QPushButton {{ background-color: #FF6B6B; border: 1px solid #999; {BTN_STYLE} }} QPushButton:hover {{ background-color: #FF4444; }}'
+BTN_GRAY = f'QPushButton {{ background-color: #EEEEEE; border: 1px solid #999; {BTN_STYLE} }}'
+
+class ProductItemWidget(QFrame):
+    def __init__(self, product, user, parent):
+        super().__init__()
+        self.product = product
+        self.user = user
+        self.parent = parent
+        discount = product.get('discount', 0) or 0
+        bg = '#2E8B57' if discount > 15 else ('#ADD8E6' if product.get('quantity', 0) == 0 else 'white')
+        self.setStyleSheet(f'QFrame {{ background: {bg}; border: 1px solid #CCC; border-radius: 4px; margin: 2px; }}')
+        self.setup_ui()
+
+    def setup_ui(self):
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(8, 8, 8, 8)
+
+        # Фото
+        photo = QLabel()
+        photo.setFixedSize(130, 100)
+        photo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        photo.setStyleSheet('border: 1px solid #AAA; background: #F5F5F5;')
+        img_path = os.path.join(os.path.dirname(__file__), self.product.get('photo', ''))
+        if os.path.exists(img_path):
+            pix = QPixmap(img_path).scaled(130, 100, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+            photo.setPixmap(pix)
+        layout.addWidget(photo)
+
+        # Инфо
+        p = self.product
+        price = float(p['price'])
+        final = price * (1 - (p.get('discount', 0) or 0) / 100)
+        price_html = f'<span style="color:red;text-decoration:line-through">{price:.2f} руб.</span> <b>{final:.2f} руб.</b>' if p.get('discount') else f'{price:.2f} руб.'
+        info = QLabel(
+            f'<b>{p["category"]} | {p["name"]}</b><br>'
+            f'Описание: {p.get("description", "")}<br>'
+            f'Производитель: {p["manufacturer"]}<br>'
+            f'Поставщик: {p["supplier"]}<br>'
+            f'Цена: {price_html}<br>'
+            f'Ед.изм: {p["unit"]}<br>'
+            f'Кол-во: {p["quantity"]}'
+        )
+        info.setFont(QFont('Times New Roman', 10))
+        info.setWordWrap(True)
+        layout.addWidget(info, 1)
+
+        # Скидка
+        disc = QLabel(f'{p.get("discount", 0)}%')
+        disc.setFont(QFont('Times New Roman', 14, QFont.Weight.Bold))
+        disc.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        disc.setFixedWidth(70)
+        disc.setStyleSheet('border:1px solid #AAA; background:rgba(255,255,255,0.5); border-radius:4px;')
+        layout.addWidget(disc)
+
+        # Кнопки для админа
+        if self.user and self.user.get('role') == 'Администратор':
+            btn_edit = QPushButton('Изменить')
+            btn_edit.setStyleSheet(BTN_LIME)
+            btn_edit.clicked.connect(lambda: self.parent.open_product_form(self.product['id']))
+            layout.addWidget(btn_edit)
+
+            btn_del = QPushButton('Удалить')
+            btn_del.setStyleSheet(BTN_RED)
+            btn_del.clicked.connect(self.delete_product)
+            layout.addWidget(btn_del)
+
+    def delete_product(self):
+        name = self.product['name']
+        if QMessageBox.question(self, 'Удаление', f'Удалить "{name}"?') != QMessageBox.StandardButton.Yes:
+            return
+        if db.product_in_orders(self.product['article']):
+            QMessageBox.warning(self, 'Ошибка', f'Товар "{name}" есть в заказах')
+            return
+        db.delete_product(self.product['id'])
+        QMessageBox.information(self, 'Успех', f'Товар "{name}" удален')
+        self.parent.load_products()
+
+
+class ProductsWindow(QMainWindow):
+    def __init__(self, user, login_window):
+        super().__init__()
+        self.user = user
+        self.login_window = login_window
+        self.timer = QTimer()
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.load_products)
+        self.setWindowTitle(f'Товары — ООО "Обувь" [{user.get("role", "Гость") if user else "Гость"}]')
+        self.setMinimumSize(900, 600)
+        self.setup_ui()
+        self.load_products()
+
+    def setup_ui(self):
+        central = QWidget()
+        central.setStyleSheet('background: white;')
+        self.setCentralWidget(central)
+        layout = QVBoxLayout(central)
+        layout.setContentsMargins(10, 10, 10, 10)
+
+        # Верхняя панель
+        top = QHBoxLayout()
+        logo = QLabel('ООО "Обувь"')
+        logo.setFont(QFont('Times New Roman', 12, QFont.Weight.Bold))
+        top.addWidget(logo)
+        top.addStretch()
+
+        if self.user and self.user.get('role') in ('Менеджер', 'Администратор'):
+            btn_orders = QPushButton('Заказы')
+            btn_orders.setStyleSheet(BTN_GREEN)
+            btn_orders.clicked.connect(self.open_orders)
+            top.addWidget(btn_orders)
+
+        if self.user:
+            name = QLabel(self.user['full_name'])
+            name.setFont(QFont('Times New Roman', 11, QFont.Weight.Bold))
+            top.addWidget(name)
+
+        btn_logout = QPushButton('Выйти')
+        btn_logout.setStyleSheet(BTN_GRAY)
+        btn_logout.clicked.connect(self.logout)
+        top.addWidget(btn_logout)
+        layout.addLayout(top)
+
+        # Фильтры
+        if self.user and self.user.get('role') in ('Менеджер', 'Администратор'):
+            filter_layout = QHBoxLayout()
+            self.search_input = QLineEdit()
+            self.search_input.setPlaceholderText('Поиск...')
+            self.search_input.textChanged.connect(lambda: self.timer.start(300))
+            filter_layout.addWidget(self.search_input, 2)
+
+            self.supplier_combo = QComboBox()
+            self.supplier_combo.addItem('Все поставщики', None)
+            for s in db.get_suppliers():
+                self.supplier_combo.addItem(s['name'], s['id'])
+            self.supplier_combo.currentIndexChanged.connect(lambda: self.timer.start(300))
+            filter_layout.addWidget(self.supplier_combo, 1)
+
+            self.sort_combo = QComboBox()
+            self.sort_combo.addItems(['Без сортировки', 'Кол-во ↑', 'Кол-во ↓'])
+            self.sort_combo.currentIndexChanged.connect(lambda: self.timer.start(300))
+            filter_layout.addWidget(self.sort_combo, 1)
+            layout.addLayout(filter_layout)
+
+        # Кнопка добавления
+        if self.user and self.user.get('role') == 'Администратор':
+            btn_add = QPushButton('+ Добавить товар')
+            btn_add.setStyleSheet(BTN_GREEN)
+            btn_add.clicked.connect(lambda: self.open_product_form())
+            layout.addWidget(btn_add, 0, Qt.AlignmentFlag.AlignLeft)
+
+        # Список товаров
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        self.list_widget = QWidget()
+        self.list_layout = QVBoxLayout(self.list_widget)
+        self.list_layout.setSpacing(4)
+        scroll.setWidget(self.list_widget)
+        layout.addWidget(scroll)
+
+        self.edit_window = None
+
+    def load_products(self):
+        search = self.search_input.text() if hasattr(self, 'search_input') else ''
+        supplier = self.supplier_combo.currentData() if hasattr(self, 'supplier_combo') else None
+        sort_index = self.sort_combo.currentIndex() if hasattr(self, 'sort_combo') else 0
+        sort = ['', 'asc', 'desc'][sort_index] if sort_index > 0 else None
+
+        products = db.get_products(search, supplier, sort)
+
+        # Очистка
+        while self.list_layout.count():
+            w = self.list_layout.takeAt(0).widget()
+            if w: w.deleteLater()
+
+        if not products:
+            lbl = QLabel('Товары не найдены')
+            lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.list_layout.addWidget(lbl)
+        else:
+            for p in products:
+                self.list_layout.addWidget(ProductItemWidget(p, self.user, self))
+
+    def open_product_form(self, product_id=None):
+        if self.edit_window and self.edit_window.isVisible():
+            QMessageBox.information(self, 'Внимание', 'Окно редактирования уже открыто')
+            self.edit_window.activateWindow()
+            return
+        from product_form import ProductFormWindow
+        self.edit_window = ProductFormWindow(product_id, self)
+        self.edit_window.show()
+
+    def open_orders(self):
+        from orders_window import OrdersWindow
+        self.orders_window = OrdersWindow(self.user, self)
+        self.orders_window.show()
+
+    def logout(self):
+        self.login_window.show()
+        self.close()
+
+###soso_project###
+CREATE DATABASE IF NOT EXISTS shoes_store2 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE shoes_store2;
+
+CREATE TABLE roles (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    role_id INT NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    login VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+
+CREATE TABLE categories (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE manufacturers (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE suppliers (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE products (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    discount DECIMAL(5,2) DEFAULT 0,
+    quantity INT DEFAULT 0,
+    unit VARCHAR(20),
+    image_path VARCHAR(255),
+    category_id INT,
+    manufacturer_id INT,
+    supplier_id INT,
+    FOREIGN KEY (category_id) REFERENCES categories(id),
+    FOREIGN KEY (manufacturer_id) REFERENCES manufacturers(id),
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
+);
+
+CREATE TABLE order_statuses (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE orders (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    article VARCHAR(100) NOT NULL,
+    status_id INT NOT NULL,
+    pickup_address VARCHAR(255) NOT NULL,
+    order_date DATE NOT NULL,
+    delivery_date DATE,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (status_id) REFERENCES order_statuses(id)
+);
+
+CREATE TABLE order_items (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    price_at_time DECIMAL(10,2) NOT NULL,
+    discount_at_time DECIMAL(5,2) DEFAULT 0,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+-- Вставка данных
+INSERT INTO roles (id, name) VALUES 
+(1, 'admin'),
+(2, 'manager'),
+(3, 'client'),
+(4, 'guest');
+
+-- Пароль для клиента тоже '12345' для простоты
+INSERT INTO users (role_id, full_name, login, password) VALUES 
+(1, 'Администратор', 'admin', '12345'),
+(2, 'Менеджер', 'manager', '12345'),
+(3, 'Иван Петров', 'client', '12345'),
+(3, 'Мария Сидорова', 'client2', '12345'),
+(4, 'Гость', 'guest', 'guest');
+
+INSERT INTO categories (id, name) VALUES 
+(1, 'Кроссовки'),
+(2, 'Ботинки'),
+(3, 'Туфли'),
+(4, 'Сандалии');
+
+INSERT INTO manufacturers (id, name) VALUES 
+(1, 'Nike'),
+(2, 'Adidas'),
+(3, 'Puma'),
+(4, 'Reebok');
+
+INSERT INTO suppliers (id, name) VALUES 
+(1, 'ООО "СпортТовар"'),
+(2, 'ИП "ОбувьОпт"');
+
+INSERT INTO order_statuses (id, name) VALUES 
+(1, 'Новый'),
+(2, 'В обработке'),
+(3, 'Собран'),
+(4, 'Выдан'),
+(5, 'Отменен');
+
+INSERT INTO products (name, description, price, discount, quantity, unit, category_id, manufacturer_id, supplier_id, image_path) VALUES
+('Nike Air Max', 'Спортивные кроссовки с воздушной подушкой', 8990.00, 10, 45, 'пара', 1, 1, 1, NULL),
+('Adidas Ultraboost', 'Беговые кроссовки с амортизацией', 14990.00, 20, 40, 'пара', 1, 2, 1, NULL),
+('Nike Air Force', 'Классические кроссовки из кожи', 10990.00, 15, 38, 'пара', 1, 1, 1, NULL),
+('Puma RS-X', 'Кроссовки в агрессивном дизайне', 8990.00, 15, 28, 'пара', 1, 3, 2, NULL),
+('Reebok Classic', 'Классические кроссовки из кожи', 6990.00, 10, 38, 'пара', 1, 4, 2, NULL),
+('Timberland Classic', 'Классические желтые ботинки', 15990.00, 0, 20, 'пара', 2, 1, 1, NULL),
+('Dr. Martens 1460', 'Ботинки с желтой прострочкой', 14990.00, 5, 18, 'пара', 2, 2, 2, NULL),
+('ECCO Track', 'Треккинговые ботинки', 18990.00, 15, 12, 'пара', 2, 3, 1, NULL),
+('ECCO Helsinki', 'Классические мужские туфли', 17990.00, 0, 15, 'пара', 3, 3, 1, NULL),
+('Clarks Tilden', 'Элегантные туфли', 12990.00, 10, 22, 'пара', 3, 1, 2, NULL),
+('Teva Hurricane', 'Сандалии для активного отдыха', 4990.00, 10, 60, 'пара', 4, 1, 1, NULL),
+('Crocs Classic', 'Легкие сандалии-клогги', 3990.00, 5, 150, 'пара', 4, 2, 2, NULL);
+
+-- Заказы теперь привязаны к пользователям
+INSERT INTO orders (user_id, article, status_id, pickup_address, order_date, delivery_date) VALUES
+(3, 'ORD-001', 4, 'г. Москва, ул. Тверская, д.10', '2025-02-27', '2025-03-10'),
+(3, 'ORD-002', 4, 'г. Москва, ул. Тверская, д.10', '2025-03-01', '2025-03-15'),
+(4, 'ORD-003', 1, 'г. Санкт-Петербург, Невский пр., д.50', '2025-03-10', NULL),
+(3, 'ORD-004', 2, 'г. Казань, ул. Баумана, д.20', '2025-03-15', NULL);
+
+INSERT INTO order_items (order_id, product_id, quantity, price_at_time, discount_at_time) VALUES
+(1, 1, 2, 8990.00, 10),
+(1, 2, 1, 14990.00, 20),
+(2, 3, 1, 10990.00, 15),
+(3, 5, 3, 6990.00, 10),
+(4, 6, 1, 15990.00, 0);
+
+#main.py
+import sys
+from PyQt6.QtWidgets import QApplication
+from ui.login import Login
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    app.setStyle("Fusion")
+    w = Login()
+    w.show()
+    sys.exit(app.exec())
+
+#images/
+
+#config/datadase.py
+import pymysql
+import pymysql.cursors
+
+DB = dict(
+    host="localhost",
+    user="root",
+    password="12345",
+    database="shoes_store2",
+    charset="utf8mb4",
+    cursorclass=pymysql.cursors.DictCursor
+)
+
+def run(sql, args=(), one=False):
+    with pymysql.connect(**DB) as c:
+        with c.cursor() as cur:
+            cur.execute(sql, args)
+            if sql.strip().upper().startswith("SELECT"):
+                return cur.fetchone() if one else cur.fetchall()
+        c.commit()
+
+#ui/login.py
+from PyQt6.QtWidgets import *
+from config.database import run
+from ui.main_window import Main
+
+
+class Login(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Вход")
+        self.setFixedSize(300, 190)
+        self.w = None
+        self.init_ui()
+
+    def init_ui(self):
+        L = QVBoxLayout(self)
+        L.addWidget(QLabel("<h2 align='center'>Магазин обуви</h2>"))
+
+        self.lg = QLineEdit(placeholderText="Логин")
+        L.addWidget(self.lg)
+
+        self.pw = QLineEdit(placeholderText="Пароль")
+        self.pw.setEchoMode(QLineEdit.EchoMode.Password)
+        L.addWidget(self.pw)
+
+        b1 = QPushButton("Войти")
+        b1.clicked.connect(self.login)
+        L.addWidget(b1)
+
+        b2 = QPushButton("Гость")
+        b2.clicked.connect(lambda: self.go({"id": 0, "full_name": "Гость", "role": "guest", "login": "guest"}))
+        L.addWidget(b2)
+
+        self.pw.returnPressed.connect(self.login)
+
+    def login(self):
+        u = run(
+            "SELECT u.*,r.name AS role FROM users u JOIN roles r ON u.role_id=r.id WHERE u.login=%s AND u.password=%s",
+            (self.lg.text().strip(), self.pw.text().strip()), one=True)
+        if not u:
+            QMessageBox.critical(self, "Ошибка", "Неверный логин или пароль.")
+            return
+        self.go(u)
+
+    def go(self, user):
+        self.hide()
+        self.w = Main(user, self)
+        self.w.show()
+
+#ui/main_window.py
+from PyQt6.QtWidgets import *
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import Qt
+from config.database import run
+from ui.product_form import Form
+from ui.orders_dialog import Orders
+import os
+
+
+class Main(QMainWindow):
+    def __init__(self, user, login):
+        super().__init__()
+        self.user = user
+        self.login = login
+        self.form = None
+        self.sid = None
+        self.all = []
+        self.rev = False
+        self.setWindowTitle(f"Магазин обуви — {user['role']}")
+        self.resize(1000, 600)
+        self.init_ui()
+        self.load()
+
+    def init_ui(self):
+        # Toolbar
+        tb = self.addToolBar("t")
+        tb.setMovable(False)
+        sp = QWidget()
+        sp.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        tb.addWidget(sp)
+        tb.addWidget(QLabel(f"  {self.user['full_name']}  "))
+        bo = QPushButton("Выйти")
+        bo.clicked.connect(self.logout)
+        tb.addWidget(bo)
+
+        # Central widget
+        c = QWidget()
+        self.setCentralWidget(c)
+        L = QVBoxLayout(c)
+
+        # Поиск, фильтрация и сортировка - для admin и manager
+        if self.user["role"] in ("admin", "manager"):
+            row = QHBoxLayout()
+            self.se = QLineEdit(placeholderText="Поиск...")
+            self.se.textChanged.connect(self.filt)
+            row.addWidget(self.se)
+
+            self.cb = QComboBox()
+            self.cb.currentTextChanged.connect(self.filt)
+            row.addWidget(self.cb)
+
+            for t, r in [("↑", False), ("↓", True)]:
+                b = QPushButton(f"Кол-во {t}")
+                b.clicked.connect(lambda _, x=r: self.sort(x))
+                row.addWidget(b)
+            row.addStretch()
+            L.addLayout(row)
+
+        # Кнопки управления товарами - ТОЛЬКО для admin
+        if self.user["role"] == "admin":
+            row2 = QHBoxLayout()
+            for t, fn in [("Добавить", lambda: self.edit(None)),
+                          ("Редактировать", lambda: self.edit(self.sid)),
+                          ("Удалить", self.delete)]:
+                b = QPushButton(t)
+                b.clicked.connect(fn)
+                row2.addWidget(b)
+            row2.addStretch()
+            L.addLayout(row2)
+
+        # Кнопка "Заказы" - для admin и manager
+        if self.user["role"] in ("admin", "manager"):
+            row3 = QHBoxLayout()
+            b_orders = QPushButton("Заказы")
+            b_orders.clicked.connect(lambda: Orders(self).exec())
+            row3.addWidget(b_orders)
+            row3.addStretch()
+            L.addLayout(row3)
+
+        # Product list
+        sc = QScrollArea()
+        sc.setWidgetResizable(True)
+        self.box = QWidget()
+        self.bl = QVBoxLayout(self.box)
+        self.bl.setSpacing(6)
+        self.bl.addStretch()
+        sc.setWidget(self.box)
+        L.addWidget(sc)
+
+    def load(self):
+        self.all = run(
+            "SELECT p.*,c.name AS category,m.name AS manufacturer,s.name AS supplier FROM products p LEFT JOIN categories c ON p.category_id=c.id LEFT JOIN manufacturers m ON p.manufacturer_id=m.id LEFT JOIN suppliers s ON p.supplier_id=s.id ORDER BY p.id")
+
+        # Заполняем комбобокс только для admin/manager
+        if self.user["role"] in ("admin", "manager"):
+            sups = ["Все поставщики"] + sorted({r["supplier"] for r in self.all if r["supplier"]})
+            self.cb.blockSignals(True)
+            self.cb.clear()
+            self.cb.addItems(sups)
+            self.cb.blockSignals(False)
+
+        self.filt()
+
+    def filt(self):
+        # Для client и guest - показываем все товары без фильтрации и сортировки
+        if self.user["role"] in ("client", "guest"):
+            res = self.all.copy()
+        else:
+            # Для admin/manager - применяем поиск и фильтр
+            s = self.se.text().lower()
+            sup = self.cb.currentText()
+            res = [r for r in self.all if (not s or any(s in str(v).lower() for v in r.values())) and (
+                        sup == "Все поставщики" or r["supplier"] == sup)]
+            res.sort(key=lambda r: r["quantity"] or 0, reverse=self.rev)
+
+        # Очищаем список
+        while self.bl.count() > 1:
+            w = self.bl.takeAt(0).widget()
+            if w:
+                w.deleteLater()
+
+        # Добавляем карточки товаров
+        for r in res:
+            card = self.create_product_card(r)
+            self.bl.insertWidget(self.bl.count() - 1, card)
+
+    def create_product_card(self, r):
+        d = float(r["discount"] or 0)
+        q = int(r["quantity"] or 0)
+        p = float(r["price"] or 0)
+
+        card = QFrame()
+        card.setFixedHeight(160)
+        card.setFrameShape(QFrame.Shape.Box)
+        if q == 0:
+            card.setStyleSheet("background:#ADD8E6")
+        elif d > 15:
+            card.setStyleSheet("background:#2E8B57")
+        else:
+            card.setStyleSheet("background:white")
+
+        h = QHBoxLayout(card)
+        h.setContentsMargins(8, 8, 8, 8)
+
+        # Image
+        ph = QLabel()
+        ph.setFixedSize(140, 140)
+        ph.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        ph.setStyleSheet("border:1px solid gray;background:white")
+        img = r["image_path"] if r["image_path"] and os.path.exists(r["image_path"]) else "images/picture.png"
+        px = QPixmap(img)
+        if not px.isNull():
+            ph.setPixmap(px.scaled(140, 140, Qt.AspectRatioMode.KeepAspectRatio))
+        else:
+            ph.setText("Фото")
+        h.addWidget(ph)
+
+        # Info
+        tc = "white" if d > 15 and q > 0 else "black"
+        info = QVBoxLayout()
+        info.setSpacing(2)
+        texts = [
+            f"<b>{r['category']} | {r['name']}</b>",
+            f"Описание: {r['description'] or '—'}",
+            f"Производитель: {r['manufacturer'] or '—'}",
+            f"Поставщик: {r['supplier'] or '—'}",
+            f"Цена: <s style='color:red'>{p}</s> <b>{round(p * (1 - d / 100), 2)}</b>" if d > 0 else f"Цена: <b>{p}</b>",
+            f"Ед. изм.: {r['unit'] or '—'}",
+            f"На складе: {q}"
+        ]
+        for txt in texts:
+            l = QLabel(txt)
+            l.setStyleSheet(f"color:{tc};border:none")
+            info.addWidget(l)
+        h.addLayout(info, 1)
+
+        # Discount
+        dl = QLabel(f"{int(d)}%" if d else "—")
+        dl.setFixedSize(120, 140)
+        dl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        dl.setStyleSheet("border:1px solid gray;font-size:22px;font-weight:bold;background:white;color:black")
+        h.addWidget(dl)
+
+        # Выделение товара - только для admin (кто может редактировать)
+        if self.user["role"] == "admin":
+            rid = r["id"]
+            card.mousePressEvent = lambda e, i=rid: setattr(self, "sid", i)
+
+        return card
+
+    def sort(self, rev):
+        self.rev = rev
+        self.filt()
+
+    def edit(self, pid):
+        if self.form:
+            QMessageBox.warning(self, "!", "Форма уже открыта.")
+            self.form.activateWindow()
+            return
+        if pid and not any(r["id"] == pid for r in self.all):
+            QMessageBox.information(self, "i", "Выберите товар.")
+            return
+        prod = next((r for r in self.all if r["id"] == pid), None) if pid else None
+        self.form = Form(self, prod)
+        self.form.show()
+
+    def delete(self):
+        if not self.sid:
+            QMessageBox.information(self, "i", "Выберите товар.")
+            return
+        if run("SELECT COUNT(*) AS c FROM order_items WHERE product_id=%s", (self.sid,), one=True)["c"]:
+            QMessageBox.critical(self, "!", "Товар есть в заказах.")
+            return
+        if QMessageBox.question(self, "?", "Удалить товар?") == QMessageBox.StandardButton.Yes:
+            run("DELETE FROM products WHERE id=%s", (self.sid,))
+            self.sid = None
+            self.load()
+
+    def logout(self):
+        self.close()
+        self.login.lg.clear()
+        self.login.pw.clear()
+        self.login.show()
+
+#ui/product_form.py
+import os
+from PyQt6.QtWidgets import *
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import Qt
+from config.database import run
+from PIL import Image
+
+
+class Form(QDialog):
+    def __init__(self, parent, p=None):
+        super().__init__(parent)
+        self.p = p
+        self.img = p["image_path"] if p else None
+        self.parent_window = parent
+        self.setWindowTitle("Товар")
+        self.setMinimumWidth(400)
+        self.finished.connect(lambda: setattr(parent, "form", None))
+        self.init_ui()
+
+    def init_ui(self):
+        L = QVBoxLayout(self)
+        F = QFormLayout()
+
+        if self.p:
+            id_f = QLineEdit(str(self.p["id"]))
+            id_f.setReadOnly(True)
+            F.addRow("ID:", id_f)
+
+        self.n = QLineEdit(self.p["name"] if self.p else "")
+        F.addRow("Название*:", self.n)
+
+        self.pr = QLineEdit(str(self.p["price"]) if self.p else "")
+        F.addRow("Цена*:", self.pr)
+
+        self.un = QLineEdit(self.p["unit"] if self.p and self.p["unit"] else "")
+        F.addRow("Ед.изм.:", self.un)
+
+        self.qy = QLineEdit(str(self.p["quantity"]) if self.p else "0")
+        F.addRow("Количество*:", self.qy)
+
+        self.di = QLineEdit(str(self.p["discount"]) if self.p else "0")
+        F.addRow("Скидка %:", self.di)
+
+        self.de = QLineEdit(self.p["description"] if self.p and self.p["description"] else "")
+        F.addRow("Описание:", self.de)
+
+        # ComboBoxes
+        self.cc = QComboBox()
+        [self.cc.addItem(r["name"], r["id"]) for r in run("SELECT id,name FROM categories")]
+
+        self.mc = QComboBox()
+        [self.mc.addItem(r["name"], r["id"]) for r in run("SELECT id,name FROM manufacturers")]
+
+        self.sc = QComboBox()
+        [self.sc.addItem(r["name"], r["id"]) for r in run("SELECT id,name FROM suppliers")]
+
+        if self.p:
+            for cb, k in ((self.cc, "category_id"), (self.mc, "manufacturer_id"), (self.sc, "supplier_id")):
+                i = cb.findData(self.p[k])
+                if i >= 0:
+                    cb.setCurrentIndex(i)
+
+        F.addRow("Категория:", self.cc)
+        F.addRow("Производитель:", self.mc)
+        F.addRow("Поставщик:", self.sc)
+
+        # Photo
+        self.pl = QLabel("Нет фото")
+        self.pl.setFixedSize(150, 100)
+        self.pl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.pl.setStyleSheet("border:1px solid gray")
+
+        if self.p and self.p["image_path"]:
+            px = QPixmap(self.p["image_path"])
+            if not px.isNull():
+                self.pl.setPixmap(px.scaled(150, 100, Qt.AspectRatioMode.KeepAspectRatio))
+
+        bp = QPushButton("Фото")
+        bp.clicked.connect(self.photo)
+        F.addRow("Фото:", self.pl)
+        F.addRow("", bp)
+        L.addLayout(F)
+
+        # Buttons
+        bs = QPushButton("Сохранить")
+        bs.clicked.connect(self.save)
+        bc = QPushButton("Отмена")
+        bc.clicked.connect(self.reject)
+        h = QHBoxLayout()
+        h.addWidget(bs)
+        h.addWidget(bc)
+        L.addLayout(h)
+
+    def photo(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Фото", "", "Images (*.jpg *.png *.bmp)")
+        if not path:
+            return
+
+        img = Image.open(path).resize((300, 200))
+        os.makedirs("images", exist_ok=True)
+        save = os.path.join("images", os.path.basename(path))
+        img.save(save)
+
+        if self.img and self.img != save and os.path.exists(self.img):
+            try:
+                os.remove(self.img)
+            except:
+                pass
+
+        self.img = save
+        self.pl.setPixmap(QPixmap(save).scaled(150, 100, Qt.AspectRatioMode.KeepAspectRatio))
+
+    def save(self):
+        n = self.n.text().strip()
+        if not n:
+            QMessageBox.critical(self, "Ошибка", "Введите название.")
+            return
+
+        try:
+            p = float(self.pr.text())
+            assert p >= 0
+        except:
+            QMessageBox.critical(self, "Ошибка", "Цена >= 0.")
+            return
+
+        try:
+            q = int(self.qy.text())
+            assert q >= 0
+        except:
+            QMessageBox.critical(self, "Ошибка", "Количество >= 0.")
+            return
+
+        d = (
+            n, self.cc.currentData(), self.mc.currentData(), self.sc.currentData(),
+            p, self.un.text().strip(), q, float(self.di.text() or 0), self.img, self.de.text().strip()
+        )
+
+        if self.p:
+            run("UPDATE products SET name=%s,category_id=%s,manufacturer_id=%s,supplier_id=%s,price=%s,unit=%s,quantity=%s,discount=%s,image_path=%s,description=%s WHERE id=%s",
+                d + (self.p["id"],))
+        else:
+            run("INSERT INTO products(name,category_id,manufacturer_id,supplier_id,price,unit,quantity,discount,image_path,description) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                d)
+
+        self.parent_window.load()
+        self.accept()
+
+#ui/orders_dialog.py
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import Qt
+from config.database import run
+from ui.order_form import OrderForm
+
+
+class Orders(QDialog):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.pw = parent
+        self.setWindowTitle("Заказы")
+        self.resize(700, 400)
+        self.init_ui()
+        self.load()
+
+    def init_ui(self):
+        L = QVBoxLayout(self)
+
+        # Кнопка добавления заказа - только для admin
+        if self.pw.user["role"] == "admin":
+            h = QHBoxLayout()
+            ba = QPushButton("Добавить заказ")
+            ba.clicked.connect(self.add)
+            h.addWidget(ba)
+
+            bd = QPushButton("Удалить заказ")
+            bd.clicked.connect(self.delete)
+            h.addWidget(bd)
+
+            h.addStretch()
+            L.addLayout(h)
+
+        self.t = QTableWidget(0, 5)
+        self.t.setHorizontalHeaderLabels(["Артикул", "Статус", "Адрес", "Дата заказа", "Дата выдачи"])
+        self.t.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.t.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.t.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        L.addWidget(self.t)
+
+        L.addWidget(QPushButton("Назад", clicked=self.close))
+
+    def load(self):
+        self.t.setRowCount(0)
+
+        # Admin видит все заказы, manager видит все заказы (только просмотр)
+        orders = run("SELECT o.*,s.name AS status FROM orders o LEFT JOIN order_statuses s ON o.status_id=s.id")
+
+        for r in orders:
+            i = self.t.rowCount()
+            self.t.insertRow(i)
+            for j, v in enumerate([r["article"], r["status"], r["pickup_address"], str(r["order_date"] or ""),
+                                   str(r["delivery_date"] or "")]):
+                it = QTableWidgetItem(str(v) if v else "")
+                it.setFlags(it.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                self.t.setItem(i, j, it)
+            self.t.item(i, 0).setData(Qt.ItemDataRole.UserRole, r["id"])
+
+    def add(self):
+        OrderForm(self, self.pw.user).exec()
+        self.load()
+
+    def delete(self):
+        if self.pw.user["role"] != "admin":
+            QMessageBox.warning(self, "Доступ запрещен", "Только администратор может удалять заказы.")
+            return
+
+        sel = self.t.selectedItems()
+        if not sel:
+            QMessageBox.warning(self, "Ошибка", "Выберите заказ для удаления.")
+            return
+
+        oid = self.t.item(sel[0].row(), 0).data(Qt.ItemDataRole.UserRole)
+        if QMessageBox.question(self, "Подтверждение", "Удалить заказ?") == QMessageBox.StandardButton.Yes:
+            run("DELETE FROM order_items WHERE order_id=%s", (oid,))
+            run("DELETE FROM orders WHERE id=%s", (oid,))
+            self.load()
+
+#ui/order_form.py
+from PyQt6.QtWidgets import *
+from config.database import run
+
+
+class OrderForm(QDialog):
+    def __init__(self, parent, user):
+        super().__init__(parent)
+        self.user = user
+        self.setWindowTitle("Добавление заказа")
+        self.setFixedSize(320, 250)
+        self.init_ui()
+
+    def init_ui(self):
+        L = QVBoxLayout(self)
+        F = QFormLayout()
+
+        self.a = QLineEdit()
+        self.ad = QLineEdit()
+        self.od = QLineEdit("2024-01-01")
+        self.dd = QLineEdit("2024-01-07")
+
+        self.st = QComboBox()
+        [self.st.addItem(r["name"], r["id"]) for r in run("SELECT id,name FROM order_statuses")]
+
+        for lbl, w in [("Артикул*:", self.a), ("Статус:", self.st), ("Адрес:", self.ad), ("Дата заказа:", self.od),
+                       ("Дата выдачи:", self.dd)]:
+            F.addRow(lbl, w)
+
+        L.addLayout(F)
+
+        bs = QPushButton("Сохранить")
+        bs.clicked.connect(self.save)
+        bc = QPushButton("Отмена")
+        bc.clicked.connect(self.reject)
+
+        h = QHBoxLayout()
+        h.addWidget(bs)
+        h.addWidget(bc)
+        L.addLayout(h)
+
+    def save(self):
+        if not self.a.text().strip():
+            QMessageBox.critical(self, "Ошибка", "Введите артикул.")
+            return
+        run("INSERT INTO orders(article, status_id, pickup_address, order_date, delivery_date) VALUES(%s,%s,%s,%s,%s)",
+            (self.a.text().strip(), self.st.currentData(), self.ad.text().strip(), self.od.text(), self.dd.text()))
+        self.accept()
+
+###mini_project###
+CREATE DATABASE IF NOT EXISTS shoes_store2 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE shoes_store2;
+
+CREATE TABLE roles (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    role_id INT NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    login VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+
+CREATE TABLE categories (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE manufacturers (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE suppliers (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE products (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    discount DECIMAL(5,2) DEFAULT 0,
+    quantity INT DEFAULT 0,
+    unit VARCHAR(20),
+    image_path VARCHAR(255),
+    category_id INT,
+    manufacturer_id INT,
+    supplier_id INT,
+    FOREIGN KEY (category_id) REFERENCES categories(id),
+    FOREIGN KEY (manufacturer_id) REFERENCES manufacturers(id),
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
+);
+
+CREATE TABLE order_statuses (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE orders (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    article VARCHAR(100) NOT NULL,
+    status_id INT NOT NULL,
+    pickup_address VARCHAR(255) NOT NULL,
+    order_date DATE NOT NULL,
+    delivery_date DATE,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (status_id) REFERENCES order_statuses(id)
+);
+
+CREATE TABLE order_items (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    price_at_time DECIMAL(10,2) NOT NULL,
+    discount_at_time DECIMAL(5,2) DEFAULT 0,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+-- Вставка данных
+INSERT INTO roles (id, name) VALUES 
+(1, 'admin'),
+(2, 'manager'),
+(3, 'client'),
+(4, 'guest');
+
+INSERT INTO users (role_id, full_name, login, password) VALUES 
+(1, 'Администратор', 'admin', '12345'),
+(2, 'Менеджер', 'manager', '12345'),
+(3, 'Иван Петров', 'client', '12345'),
+(3, 'Мария Сидорова', 'client2', '12345'),
+(4, 'Гость', 'guest', 'guest');
+
+INSERT INTO categories (id, name) VALUES 
+(1, 'Кроссовки'),
+(2, 'Ботинки'),
+(3, 'Туфли'),
+(4, 'Сандалии');
+
+INSERT INTO manufacturers (id, name) VALUES 
+(1, 'Nike'),
+(2, 'Adidas'),
+(3, 'Puma'),
+(4, 'Reebok');
+
+INSERT INTO suppliers (id, name) VALUES 
+(1, 'ООО "СпортТовар"'),
+(2, 'ИП "ОбувьОпт"');
+
+INSERT INTO order_statuses (id, name) VALUES 
+(1, 'Новый'),
+(2, 'В обработке'),
+(3, 'Собран'),
+(4, 'Выдан'),
+(5, 'Отменен');
+
+INSERT INTO products (name, description, price, discount, quantity, unit, category_id, manufacturer_id, supplier_id, image_path) VALUES
+('Nike Air Max', 'Спортивные кроссовки с воздушной подушкой', 8990.00, 10, 45, 'пара', 1, 1, 1, NULL),
+('Adidas Ultraboost', 'Беговые кроссовки с амортизацией', 14990.00, 20, 40, 'пара', 1, 2, 1, NULL),
+('Nike Air Force', 'Классические кроссовки из кожи', 10990.00, 15, 38, 'пара', 1, 1, 1, NULL),
+('Puma RS-X', 'Кроссовки в агрессивном дизайне', 8990.00, 15, 28, 'пара', 1, 3, 2, NULL),
+('Reebok Classic', 'Классические кроссовки из кожи', 6990.00, 10, 38, 'пара', 1, 4, 2, NULL),
+('Timberland Classic', 'Классические желтые ботинки', 15990.00, 0, 20, 'пара', 2, 1, 1, NULL),
+('Dr. Martens 1460', 'Ботинки с желтой прострочкой', 14990.00, 5, 18, 'пара', 2, 2, 2, NULL),
+('ECCO Track', 'Треккинговые ботинки', 18990.00, 15, 12, 'пара', 2, 3, 1, NULL),
+('ECCO Helsinki', 'Классические мужские туфли', 17990.00, 0, 15, 'пара', 3, 3, 1, NULL),
+('Clarks Tilden', 'Элегантные туфли', 12990.00, 10, 22, 'пара', 3, 1, 2, NULL),
+('Teva Hurricane', 'Сандалии для активного отдыха', 4990.00, 10, 60, 'пара', 4, 1, 1, NULL),
+('Crocs Classic', 'Легкие сандалии-клогги', 3990.00, 5, 150, 'пара', 4, 2, 2, NULL);
+
+INSERT INTO orders (user_id, article, status_id, pickup_address, order_date, delivery_date) VALUES
+(3, 'ORD-001', 4, 'г. Москва, ул. Тверская, д.10', '2025-02-27', '2025-03-10'),
+(3, 'ORD-002', 4, 'г. Москва, ул. Тверская, д.10', '2025-03-01', '2025-03-15'),
+(4, 'ORD-003', 1, 'г. Санкт-Петербург, Невский пр., д.50', '2025-03-10', NULL),
+(3, 'ORD-004', 2, 'г. Казань, ул. Баумана, д.20', '2025-03-15', NULL);
+
+INSERT INTO order_items (order_id, product_id, quantity, price_at_time, discount_at_time) VALUES
+(1, 1, 2, 8990.00, 10),
+(1, 2, 1, 14990.00, 20),
+(2, 3, 1, 10990.00, 15),
+(3, 5, 3, 6990.00, 10),
+(4, 6, 1, 15990.00, 0);
+
+#main.py
+import os, sys, pymysql, pymysql.cursors
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import *
+
+DB = dict(host="localhost", user="root", password="12345", database="shoes_store2", charset="utf8mb4", cursorclass=pymysql.cursors.DictCursor)
+
+def run(sql, args=(), one=False):
+    with pymysql.connect(**DB) as c:
+        with c.cursor() as cur:
+            cur.execute(sql, args)
+            if sql.strip().upper().startswith("SELECT"): return cur.fetchone() if one else cur.fetchall()
+        c.commit()
+
+class Login(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Вход"); self.setFixedSize(300, 190); self.w = None
+        L = QVBoxLayout(self)
+        L.addWidget(QLabel("<h2 align='center'>Магазин обуви</h2>"))
+        self.lg = QLineEdit(placeholderText="Логин"); L.addWidget(self.lg)
+        self.pw = QLineEdit(placeholderText="Пароль"); self.pw.setEchoMode(QLineEdit.EchoMode.Password); L.addWidget(self.pw)
+        b1 = QPushButton("Войти"); b1.clicked.connect(self.login); L.addWidget(b1)
+        b2 = QPushButton("Гость"); b2.clicked.connect(lambda: self.go({"id":0,"full_name":"Гость","role":"guest"})); L.addWidget(b2)
+        self.pw.returnPressed.connect(self.login)
+
+    def login(self):
+        u = run("SELECT u.*,r.name AS role FROM users u JOIN roles r ON u.role_id=r.id WHERE u.login=%s AND u.password=%s", (self.lg.text().strip(), self.pw.text().strip()), one=True)
+        if not u: QMessageBox.critical(self, "Ошибка", "Неверный логин или пароль."); return
+        self.go(u)
+
+    def go(self, user): self.hide(); self.w = Main(user, self); self.w.show()
+
+class Main(QMainWindow):
+    def __init__(self, user, login):
+        super().__init__()
+        self.user = user; self.login = login; self.form = None; self.sid = None; self.all = []; self.rev = False
+        self.setWindowTitle(f"Магазин обуви — {user['role']}"); self.resize(1000, 600)
+
+        tb = self.addToolBar("t"); tb.setMovable(False)
+        sp = QWidget(); sp.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred); tb.addWidget(sp)
+        tb.addWidget(QLabel(f"  {user['full_name']}  "))
+        bo = QPushButton("Выйти"); bo.clicked.connect(self.logout); tb.addWidget(bo)
+
+        c = QWidget(); self.setCentralWidget(c); L = QVBoxLayout(c)
+
+        if user["role"] in ("admin","manager"):
+            row = QHBoxLayout()
+            self.se = QLineEdit(placeholderText="Поиск..."); self.se.textChanged.connect(self.filt); row.addWidget(self.se)
+            self.cb = QComboBox(); self.cb.currentTextChanged.connect(self.filt); row.addWidget(self.cb)
+            for t,r in [("↑",False),("↓",True)]:
+                b = QPushButton(f"Кол-во {t}"); b.clicked.connect(lambda _,x=r: self.sort(x)); row.addWidget(b)
+            row.addStretch(); L.addLayout(row)
+
+        if user["role"] == "admin":
+            row2 = QHBoxLayout()
+            for t,fn in [("Добавить",lambda:self.edit(None)),("Редактировать",lambda:self.edit(self.sid)),("Удалить",self.delete)]:
+                b = QPushButton(t); b.clicked.connect(fn); row2.addWidget(b)
+            row2.addStretch(); L.addLayout(row2)
+
+        if user["role"] in ("admin","manager"):
+            row3 = QHBoxLayout()
+            b_orders = QPushButton("Заказы"); b_orders.clicked.connect(lambda: Orders(self).exec()); row3.addWidget(b_orders)
+            row3.addStretch(); L.addLayout(row3)
+
+        sc = QScrollArea(); sc.setWidgetResizable(True)
+        self.box = QWidget(); self.bl = QVBoxLayout(self.box); self.bl.setSpacing(6); self.bl.addStretch()
+        sc.setWidget(self.box); L.addWidget(sc)
+        self.load()
+
+    def load(self):
+        self.all = run("SELECT p.*,c.name AS category,m.name AS manufacturer,s.name AS supplier FROM products p LEFT JOIN categories c ON p.category_id=c.id LEFT JOIN manufacturers m ON p.manufacturer_id=m.id LEFT JOIN suppliers s ON p.supplier_id=s.id ORDER BY p.id")
+        if self.user["role"] in ("admin","manager"):
+            sups = ["Все поставщики"]+sorted({r["supplier"] for r in self.all if r["supplier"]})
+            self.cb.blockSignals(True); self.cb.clear(); self.cb.addItems(sups); self.cb.blockSignals(False)
+        self.filt()
+
+    def filt(self):
+        if self.user["role"] in ("client","guest"):
+            res = self.all.copy()
+        else:
+            s = self.se.text().lower(); sup = self.cb.currentText()
+            res = [r for r in self.all if (not s or any(s in str(v).lower() for v in r.values())) and (sup=="Все поставщики" or r["supplier"]==sup)]
+            res.sort(key=lambda r: r["quantity"] or 0, reverse=self.rev)
+        while self.bl.count()>1: w=self.bl.takeAt(0).widget(); w and w.deleteLater()
+        for r in res:
+            d=float(r["discount"] or 0); q=int(r["quantity"] or 0); p=float(r["price"] or 0)
+            card=QFrame(); card.setFixedHeight(160); card.setFrameShape(QFrame.Shape.Box)
+            card.setStyleSheet("background:#ADD8E6" if q==0 else ("background:#2E8B57" if d>15 else "background:white"))
+            h=QHBoxLayout(card); h.setContentsMargins(8,8,8,8)
+            ph=QLabel(); ph.setFixedSize(140,140); ph.setAlignment(Qt.AlignmentFlag.AlignCenter); ph.setStyleSheet("border:1px solid gray;background:white")
+            img=r["image_path"] if r["image_path"] and os.path.exists(r["image_path"]) else "images/picture.png"
+            px=QPixmap(img)
+            if not px.isNull(): ph.setPixmap(px.scaled(140,140,Qt.AspectRatioMode.KeepAspectRatio))
+            else: ph.setText("Фото")
+            h.addWidget(ph)
+            tc="white" if d>15 and q>0 else "black"
+            info=QVBoxLayout(); info.setSpacing(2)
+            for txt in [f"<b>{r['category']} | {r['name']}</b>",f"Описание: {r['description'] or '—'}",f"Производитель: {r['manufacturer'] or '—'}",f"Поставщик: {r['supplier'] or '—'}",f"Цена: <s style='color:red'>{p}</s> <b>{round(p*(1-d/100),2)}</b>" if d>0 else f"Цена: <b>{p}</b>",f"Ед. изм.: {r['unit'] or '—'}",f"На складе: {q}"]:
+                l=QLabel(txt); l.setStyleSheet(f"color:{tc};border:none"); info.addWidget(l)
+            h.addLayout(info,1)
+            dl=QLabel(f"{int(d)}%" if d else "—"); dl.setFixedSize(120,140); dl.setAlignment(Qt.AlignmentFlag.AlignCenter); dl.setStyleSheet("border:1px solid gray;font-size:22px;font-weight:bold;background:white;color:black"); h.addWidget(dl)
+            if self.user["role"] == "admin": rid=r["id"]; card.mousePressEvent=lambda e,i=rid: setattr(self,"sid",i)
+            self.bl.insertWidget(self.bl.count()-1,card)
+
+    def sort(self, rev): self.rev=rev; self.filt()
+
+    def edit(self, pid):
+        if self.form: QMessageBox.warning(self,"!","Форма уже открыта."); self.form.activateWindow(); return
+        if pid and not any(r["id"]==pid for r in self.all): QMessageBox.information(self,"i","Выберите товар."); return
+        prod=next((r for r in self.all if r["id"]==pid),None) if pid else None
+        self.form=Form(self,prod); self.form.show()
+
+    def delete(self):
+        if not self.sid: QMessageBox.information(self,"i","Выберите товар."); return
+        if run("SELECT COUNT(*) AS c FROM order_items WHERE product_id=%s",(self.sid,),one=True)["c"]: QMessageBox.critical(self,"!","Товар есть в заказах."); return
+        if QMessageBox.question(self,"?","Удалить товар?") == QMessageBox.StandardButton.Yes:
+            run("DELETE FROM products WHERE id=%s",(self.sid,)); self.sid=None; self.load()
+
+    def logout(self): self.close(); self.login.lg.clear(); self.login.pw.clear(); self.login.show()
+
+class Form(QDialog):
+    def __init__(self, parent, p=None):
+        super().__init__(parent)
+        self.p=p; self.img=p["image_path"] if p else None
+        self.setWindowTitle("Товар"); self.setMinimumWidth(400)
+        self.finished.connect(lambda: setattr(parent,"form",None))
+        L=QVBoxLayout(self); F=QFormLayout()
+        if p: id_f=QLineEdit(str(p["id"])); id_f.setReadOnly(True); F.addRow("ID:",id_f)
+        self.n=QLineEdit(p["name"] if p else ""); F.addRow("Название*:",self.n)
+        self.pr=QLineEdit(str(p["price"]) if p else ""); F.addRow("Цена*:",self.pr)
+        self.un=QLineEdit(p["unit"] if p and p["unit"] else ""); F.addRow("Ед.изм.:",self.un)
+        self.qy=QLineEdit(str(p["quantity"]) if p else "0"); F.addRow("Количество*:",self.qy)
+        self.di=QLineEdit(str(p["discount"]) if p else "0"); F.addRow("Скидка %:",self.di)
+        self.de=QLineEdit(p["description"] if p and p["description"] else ""); F.addRow("Описание:",self.de)
+        self.cc=QComboBox(); [self.cc.addItem(r["name"],r["id"]) for r in run("SELECT id,name FROM categories")]
+        self.mc=QComboBox(); [self.mc.addItem(r["name"],r["id"]) for r in run("SELECT id,name FROM manufacturers")]
+        self.sc=QComboBox(); [self.sc.addItem(r["name"],r["id"]) for r in run("SELECT id,name FROM suppliers")]
+        if p:
+            for cb,k in ((self.cc,"category_id"),(self.mc,"manufacturer_id"),(self.sc,"supplier_id")):
+                i=cb.findData(p[k]); i>=0 and cb.setCurrentIndex(i)
+        F.addRow("Категория:",self.cc); F.addRow("Производитель:",self.mc); F.addRow("Поставщик:",self.sc)
+        self.pl=QLabel("Нет фото"); self.pl.setFixedSize(150,100); self.pl.setAlignment(Qt.AlignmentFlag.AlignCenter); self.pl.setStyleSheet("border:1px solid gray")
+        if p and p["image_path"]:
+            px=QPixmap(p["image_path"])
+            if not px.isNull(): self.pl.setPixmap(px.scaled(150,100,Qt.AspectRatioMode.KeepAspectRatio))
+        bp=QPushButton("Фото"); bp.clicked.connect(self.photo)
+        F.addRow("Фото:",self.pl); F.addRow("",bp); L.addLayout(F)
+        bs=QPushButton("Сохранить"); bs.clicked.connect(self.save)
+        bc=QPushButton("Отмена"); bc.clicked.connect(self.reject)
+        h=QHBoxLayout(); h.addWidget(bs); h.addWidget(bc); L.addLayout(h)
+
+    def photo(self):
+        path,_=QFileDialog.getOpenFileName(self,"Фото","","Images (*.jpg *.png *.bmp)")
+        if not path: return
+        from PIL import Image
+        img=Image.open(path).resize((300,200)); os.makedirs("images",exist_ok=True)
+        save=os.path.join("images",os.path.basename(path)); img.save(save)
+        if self.img and self.img!=save and os.path.exists(self.img):
+            try: os.remove(self.img)
+            except: pass
+        self.img=save; self.pl.setPixmap(QPixmap(save).scaled(150,100,Qt.AspectRatioMode.KeepAspectRatio))
+
+    def save(self):
+        n=self.n.text().strip()
+        if not n: QMessageBox.critical(self,"Ошибка","Введите название."); return
+        try: p=float(self.pr.text()); assert p>=0
+        except: QMessageBox.critical(self,"Ошибка","Цена >= 0."); return
+        try: q=int(self.qy.text()); assert q>=0
+        except: QMessageBox.critical(self,"Ошибка","Количество >= 0."); return
+        d=(n,self.cc.currentData(),self.mc.currentData(),self.sc.currentData(),p,self.un.text().strip(),q,float(self.di.text() or 0),self.img,self.de.text().strip())
+        if self.p: run("UPDATE products SET name=%s,category_id=%s,manufacturer_id=%s,supplier_id=%s,price=%s,unit=%s,quantity=%s,discount=%s,image_path=%s,description=%s WHERE id=%s",d+(self.p["id"],))
+        else: run("INSERT INTO products(name,category_id,manufacturer_id,supplier_id,price,unit,quantity,discount,image_path,description)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",d)
+        self.parent().load(); self.accept()
+
+class Orders(QDialog):
+    def __init__(self, parent):
+        super().__init__(parent); self.pw=parent
+        self.setWindowTitle("Заказы"); self.resize(700,400)
+        L=QVBoxLayout(self)
+        if parent.user["role"]=="admin":
+            h=QHBoxLayout()
+            ba=QPushButton("Добавить"); ba.clicked.connect(self.add)
+            bd=QPushButton("Удалить"); bd.clicked.connect(self.delete)
+            h.addWidget(ba); h.addWidget(bd); h.addStretch(); L.addLayout(h)
+        self.t=QTableWidget(0,5)
+        self.t.setHorizontalHeaderLabels(["Артикул","Статус","Адрес","Дата заказа","Дата выдачи"])
+        self.t.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.t.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.t.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        L.addWidget(self.t)
+        L.addWidget(QPushButton("Назад", clicked=self.close))
+        self.load()
+
+    def load(self):
+        self.t.setRowCount(0)
+        for r in run("SELECT o.*,s.name AS status FROM orders o LEFT JOIN order_statuses s ON o.status_id=s.id"):
+            i=self.t.rowCount(); self.t.insertRow(i)
+            for j,v in enumerate([r["article"],r["status"],r["pickup_address"],str(r["order_date"] or ""),str(r["delivery_date"] or "")]):
+                it=QTableWidgetItem(str(v) if v else ""); it.setFlags(it.flags()&~Qt.ItemFlag.ItemIsEditable); self.t.setItem(i,j,it)
+            self.t.item(i,0).setData(Qt.ItemDataRole.UserRole,r["id"])
+
+    def add(self): OrderForm(self).exec(); self.load()
+    def delete(self):
+        sel=self.t.selectedItems()
+        if not sel: return
+        oid=self.t.item(sel[0].row(),0).data(Qt.ItemDataRole.UserRole)
+        if QMessageBox.question(self,"?","Удалить заказ?") == QMessageBox.StandardButton.Yes:
+            run("DELETE FROM order_items WHERE order_id=%s",(oid,)); run("DELETE FROM orders WHERE id=%s",(oid,)); self.load()
+
+class OrderForm(QDialog):
+    def __init__(self, parent):
+        super().__init__(parent); self.setWindowTitle("Заказ"); self.setFixedSize(320,250)
+        L=QVBoxLayout(self); F=QFormLayout()
+        self.a=QLineEdit(); self.ad=QLineEdit(); self.od=QLineEdit("2024-01-01"); self.dd=QLineEdit("2024-01-07")
+        self.st=QComboBox(); [self.st.addItem(r["name"],r["id"]) for r in run("SELECT id,name FROM order_statuses")]
+        for lbl,w in [("Артикул*:",self.a),("Статус:",self.st),("Адрес:",self.ad),("Дата заказа:",self.od),("Дата выдачи:",self.dd)]: F.addRow(lbl,w)
+        L.addLayout(F)
+        bs=QPushButton("Сохранить"); bs.clicked.connect(self.save)
+        bc=QPushButton("Отмена"); bc.clicked.connect(self.reject)
+        h=QHBoxLayout(); h.addWidget(bs); h.addWidget(bc); L.addLayout(h)
+    def save(self):
+        if not self.a.text().strip(): QMessageBox.critical(self,"Ошибка","Введите артикул."); return
+        run("INSERT INTO orders(article,status_id,pickup_address,order_date,delivery_date)VALUES(%s,%s,%s,%s,%s)",(self.a.text().strip(),self.st.currentData(),self.ad.text().strip(),self.od.text(),self.dd.text()))
+        self.accept()
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv); app.setStyle("Fusion"); w = Login(); w.show(); sys.exit(app.exec())
+
+###README.md###
+#README.md
+# ООО «» — Информационная система
+
+## Требования
+- Python 3.9+
+- MySQL / MariaDB
+- Зависимости: `pip install PyQt6 pymysql Pillow`
+
+## Настройка БД
+1. В файле `db.py` укажите параметры подключения (host, user, password).
+2. Выполните скрипт: `mysql -u root -p < database.sql`
+
+## Запуск
+```
+python main.py
+```
+
+## Учётные записи (из файла импорта)
+| Роль             | Логин                | Пароль |
+|------------------|----------------------|--------|
+| Администратор    | 94d5ous@gmail.com    | uzWC67 |
+| Менеджер         | 1diph5e@tutanota.com | 8ntwUp |
+| Клиент           | 5d4zbu@tutanota.com  | rwVDh9 |
+
+## Структура файлов
+- `main.py`           — точка входа
+- `db.py`             — работа с базой данных (pymysql)
+- `login_window.py`   — окно авторизации
+- `products_window.py`— список товаров
+- `product_form.py`   — форма добавления/редактирования товара
+- `orders_window.py`  — список заказов
+- `order_form.py`     — форма добавления/редактирования заказа
+- `database.sql`      — скрипт базы данных
+- `picture.png`       — заглушка для отсутствующего фото
